@@ -1,18 +1,39 @@
-# React + Vite
+# Examen 1 - Programación IV
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+## Cambios realizados
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Componentes base - src/components/
+- `Navbar.jsx` - Barra de navegacion con links a Home y Repuestos
+- `Footer.jsx` - Pie de pagina
+- `Home.jsx` - Pagina de bienvenida con boton al catalogo
+- `CarParts.jsx` - Catalogo de repuestos
 
-## React Compiler
+### Routing - src/routeTree.jsx
+- Rutas configuradas con TanStack Router
+- Ruta `/` carga Home
+- Ruta `/carparts` carga CarParts
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+### Consumo de API - src/components/CarParts.jsx
+- Fetch a JSONBin con access key desde variable de entorno
+- Muestra los articulos de `data.record.articles`
+- Paginacion de 10 en 10 con boton "Ver mas"
 
-Note: This will impact Vite dev & build performances.
+### Busqueda - src/components/CarParts.jsx
+- Filtro por nombre del repuesto con useState
 
-## Expanding the ESLint configuration
+### Estados de UI - src/components/CarParts.jsx
+- Loading: mensaje mientras carga
+- Error: mensaje y boton de reintentar
+- Empty state: mensaje cuando no hay resultados
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Deploy
+- Desplegado en Netlify desde la rama `feature/carparts-list`
+- Variables de entorno configuradas en Netlify
+
+## Correr localmente
+```
+npm install
+npm run dev
+```
+

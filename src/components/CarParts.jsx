@@ -42,8 +42,25 @@ const CarParts = () => {
     setVisible(PAGE_SIZE);
   };
 
-  if (loading) return <p style={{ padding: "2rem" }}>Cargando repuestos...</p>;
-  if (error) return <p style={{ padding: "2rem", color: "red" }}>Error: {error}</p>;
+  //  Loading state
+  if (loading) return (
+    <div style={{ padding: "3rem", textAlign: "center" }}>
+      <p style={{ fontSize: "1.2rem", color: "#555" }}> Cargando repuestos...</p>
+    </div>
+  );
+
+  //  Error state
+  if (error) return (
+    <div style={{ padding: "3rem", textAlign: "center" }}>
+      <p style={{ fontSize: "1.2rem", color: "red" }}> Error: {error}</p>
+      <button
+        onClick={() => window.location.reload()}
+        style={{ marginTop: "1rem", padding: "0.75rem 2rem", background: "#e94560", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}
+      >
+        Reintentar
+      </button>
+    </div>
+  );
 
   return (
     <main style={{ padding: "2rem" }}>
@@ -57,33 +74,43 @@ const CarParts = () => {
         style={{ width: "100%", padding: "0.75rem 1rem", fontSize: "1rem", borderRadius: "8px", border: "1px solid #ccc", marginTop: "1rem", marginBottom: "1.5rem", boxSizing: "border-box" }}
       />
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "1rem" }}>
-        {filtered.slice(0, visible).map((part) => (
-          <div key={part.articleId} style={{ border: "1px solid #ddd", borderRadius: "8px", overflow: "hidden", background: "#f9f9f9" }}>
-            <img
-              src={part.s3image}
-              alt={part.articleProductName}
-              style={{ width: "100%", height: "160px", objectFit: "cover" }}
-              onError={(e) => e.target.style.display = "none"}
-            />
-            <div style={{ padding: "1rem" }}>
-              <h3 style={{ margin: "0 0 0.5rem", color: "#1a1a2e" }}>{part.articleProductName}</h3>
-              <p style={{ margin: "0.25rem 0", color: "#555" }}> {part.articleNo}</p>
-              <p style={{ margin: "0.25rem 0", color: "#555" }}> {part.supplierName}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {visible < filtered.length && (
-        <div style={{ textAlign: "center", marginTop: "2rem" }}>
-          <button
-            onClick={() => setVisible((prev) => prev + PAGE_SIZE)}
-            style={{ padding: "0.75rem 2rem", background: "#e94560", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "1rem" }}
-          >
-            Ver más
-          </button>
+      {/*  Empty state */}
+      {filtered.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "3rem", color: "#888" }}>
+          <p style={{ fontSize: "1.5rem" }}> No se encontraron repuestos</p>
+          <p>Intenta con otro término de búsqueda.</p>
         </div>
+      ) : (
+        <>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "1rem" }}>
+            {filtered.slice(0, visible).map((part) => (
+              <div key={part.articleId} style={{ border: "1px solid #ddd", borderRadius: "8px", overflow: "hidden", background: "#f9f9f9" }}>
+                <img
+                  src={part.s3image}
+                  alt={part.articleProductName}
+                  style={{ width: "100%", height: "160px", objectFit: "cover" }}
+                  onError={(e) => e.target.style.display = "none"}
+                />
+                <div style={{ padding: "1rem" }}>
+                  <h3 style={{ margin: "0 0 0.5rem", color: "#1a1a2e" }}>{part.articleProductName}</h3>
+                  <p style={{ margin: "0.25rem 0", color: "#555" }}> {part.articleNo}</p>
+                  <p style={{ margin: "0.25rem 0", color: "#555" }}> {part.supplierName}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {visible < filtered.length && (
+            <div style={{ textAlign: "center", marginTop: "2rem" }}>
+              <button
+                onClick={() => setVisible((prev) => prev + PAGE_SIZE)}
+                style={{ padding: "0.75rem 2rem", background: "#e94560", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "1rem" }}
+              >
+                Ver más
+              </button>
+            </div>
+          )}
+        </>
       )}
     </main>
   );

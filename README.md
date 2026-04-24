@@ -32,7 +32,7 @@
 - Variables de entorno configuradas en Netlify
 
 ## Correr localmente
-```bash
+```
 npm install
 npm run dev
 ```

@@ -4,6 +4,7 @@ const PAGE_SIZE = 10;
 
 const CarParts = () => {
   const [parts, setParts] = useState([]);
+  const [search, setSearch] = useState("");
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,7 +12,7 @@ const CarParts = () => {
   useEffect(() => {
     const fetchParts = async () => {
       const headers = new Headers();
-      const apiKey = import.meta.env.VITE_ACCESS_KEY;
+      const apiKey = import.meta.env.VITE_JSONBIN_ACCESS_KEY;
 
       if (apiKey) {
         headers.append("X-Access-Key", apiKey);
@@ -21,7 +22,7 @@ const CarParts = () => {
         const response = await fetch("https://api.jsonbin.io/v3/b/69e535e236566621a8ce210a", { headers });
         if (!response.ok) throw new Error("Error al obtener los datos");
         const data = await response.json();
-        setParts(data.record.repuestos);
+        setParts(data.record.articles);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -32,24 +33,49 @@ const CarParts = () => {
     fetchParts();
   }, []);
 
+  const filtered = parts.filter((part) =>
+    part.articleProductName.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+    setVisible(PAGE_SIZE);
+  };
+
   if (loading) return <p style={{ padding: "2rem" }}>Cargando repuestos...</p>;
   if (error) return <p style={{ padding: "2rem", color: "red" }}>Error: {error}</p>;
 
   return (
     <main style={{ padding: "2rem" }}>
       <h2>Catálogo de Repuestos</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "1rem", marginTop: "1rem" }}>
-        {parts.slice(0, visible).map((part, index) => (
-          <div key={index} style={{ border: "1px solid #ddd", borderRadius: "8px", padding: "1rem", background: "#f9f9f9" }}>
-            <h3 style={{ margin: "0 0 0.5rem", color: "#1a1a2e" }}>{part.nombre}</h3>
-            <p style={{ margin: "0.25rem 0" }}> Categoría: {part.categoria}</p>
-            <p style={{ margin: "0.25rem 0" }}> Precio: ₡{part.precio}</p>
-            <p style={{ margin: "0.25rem 0" }}> Stock: {part.stock}</p>
+
+      <input
+        type="text"
+        placeholder="Buscar repuesto por nombre..."
+        value={search}
+        onChange={handleSearch}
+        style={{ width: "100%", padding: "0.75rem 1rem", fontSize: "1rem", borderRadius: "8px", border: "1px solid #ccc", marginTop: "1rem", marginBottom: "1.5rem", boxSizing: "border-box" }}
+      />
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "1rem" }}>
+        {filtered.slice(0, visible).map((part) => (
+          <div key={part.articleId} style={{ border: "1px solid #ddd", borderRadius: "8px", overflow: "hidden", background: "#f9f9f9" }}>
+            <img
+              src={part.s3image}
+              alt={part.articleProductName}
+              style={{ width: "100%", height: "160px", objectFit: "cover" }}
+              onError={(e) => e.target.style.display = "none"}
+            />
+            <div style={{ padding: "1rem" }}>
+              <h3 style={{ margin: "0 0 0.5rem", color: "#1a1a2e" }}>{part.articleProductName}</h3>
+              <p style={{ margin: "0.25rem 0", color: "#555" }}> {part.articleNo}</p>
+              <p style={{ margin: "0.25rem 0", color: "#555" }}> {part.supplierName}</p>
+            </div>
           </div>
         ))}
       </div>
 
-      {visible < parts.length && (
+      {visible < filtered.length && (
         <div style={{ textAlign: "center", marginTop: "2rem" }}>
           <button
             onClick={() => setVisible((prev) => prev + PAGE_SIZE)}
